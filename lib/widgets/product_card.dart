@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  ProductCard  –  Displays a single product from the Map data structure.
+//  ProductCard  –  Premium card with minimal animation overhead.
+//
+//  Performance choices:
+//  • Single AnimatedOpacity instead of AnimationController + Tween
+//  • AnimatedScale for press feedback (no extra controller)
+//  • All const colours / text styles
+//  • RepaintBoundary is applied by the parent grid, not here
 // ─────────────────────────────────────────────────────────────────────────────
 class ProductCard extends StatefulWidget {
-  /// The product map: { "name", "price", "icon", "color" }
   final Map<String, dynamic> product;
-
-  /// Index in the list (used for staggered animation delay)
   final int index;
 
   const ProductCard({super.key, required this.product, required this.index});
@@ -16,149 +19,94 @@ class ProductCard extends StatefulWidget {
   State<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCardState extends State<ProductCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _fadeAnim;
-  late final Animation<Offset> _slideAnim;
-
+class _ProductCardState extends State<ProductCard> {
+  bool _visible = false;
   bool _pressed = false;
 
   @override
   void initState() {
     super.initState();
-
-    // Staggered entrance animation per card index
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 450),
-    );
-
-    _fadeAnim =
-        CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-
-    _slideAnim = Tween<Offset>(
-      begin: const Offset(0, 0.18),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-
-    // Delay based on card index for staggered effect
-    Future.delayed(Duration(milliseconds: widget.index * 60), () {
-      if (mounted) _controller.forward();
+    // Tiny stagger (max 240 ms) – just enough to feel alive, not enough to feel slow
+    final delay = (widget.index * 30).clamp(0, 240);
+    Future.delayed(Duration(milliseconds: delay), () {
+      if (mounted) setState(() => _visible = true);
     });
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Read values from the Map<String, dynamic>
-    final String name = widget.product['name'] as String;
-    final double price = widget.product['price'] as double;
-    final IconData icon = widget.product['icon'] as IconData;
-    final Color accentColor = widget.product['color'] as Color;
+    final String name   = widget.product['name']  as String;
+    final double price  = widget.product['price'] as double;
+    final IconData icon = widget.product['icon']  as IconData;
+    final Color accent  = widget.product['color'] as Color;
 
-    return FadeTransition(
-      opacity: _fadeAnim,
-      child: SlideTransition(
-        position: _slideAnim,
+    return AnimatedOpacity(
+      opacity: _visible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOut,
+      child: AnimatedSlide(
+        offset: _visible ? Offset.zero : const Offset(0, 0.08),
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
         child: GestureDetector(
           onTapDown: (_) => setState(() => _pressed = true),
           onTapUp: (_) => setState(() => _pressed = false),
           onTapCancel: () => setState(() => _pressed = false),
           child: AnimatedScale(
             scale: _pressed ? 0.96 : 1.0,
-            duration: const Duration(milliseconds: 120),
-            child: _buildCard(name, price, icon, accentColor),
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.easeOut,
+            child: _CardBody(name: name, price: price, icon: icon, accent: accent),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildCard(
-      String name, double price, IconData icon, Color accentColor) {
+// ── Stateless card body – never rebuilds on press (only the parent rebuilds) ──
+class _CardBody extends StatelessWidget {
+  final String name;
+  final double price;
+  final IconData icon;
+  final Color accent;
+
+  const _CardBody({
+    required this.name,
+    required this.price,
+    required this.icon,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: accentColor.withValues(alpha: 0.10),
+            color: accent.withValues(alpha: 0.12),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+          const BoxShadow(
+            color: Color(0x0A000000),
             blurRadius: 6,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Icon / Image area ───────────────────────────────────────────
+          // ── Icon area ─────────────────────────────────────────────────
           Expanded(
             flex: 5,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    accentColor.withValues(alpha: 0.12),
-                    accentColor.withValues(alpha: 0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-              ),
-              child: Stack(
-                children: [
-                  // Background pattern dots
-                  Positioned(
-                    top: -10,
-                    right: -10,
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: accentColor.withValues(alpha: 0.08),
-                      ),
-                    ),
-                  ),
-                  // Product icon
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: accentColor.withValues(alpha: 0.20),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(icon, size: 38, color: accentColor),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: _IconArea(accent: accent, icon: icon),
           ),
 
-          // ── Product info ────────────────────────────────────────────────
+          // ── Info area ─────────────────────────────────────────────────
           Expanded(
             flex: 4,
             child: Padding(
@@ -166,7 +114,6 @@ class _ProductCardState extends State<ProductCard>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product name
                   Text(
                     name,
                     maxLines: 2,
@@ -179,41 +126,7 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
                   const Spacer(),
-
-                  // Price row
-                  Row(
-                    children: [
-                      // Currency badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          '৳',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          _formatPrice(price),
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: accentColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  _PriceRow(price: price, accent: accent),
                 ],
               ),
             ),
@@ -222,17 +135,114 @@ class _ProductCardState extends State<ProductCard>
       ),
     );
   }
+}
 
-  /// Formats price as "1,49,999" (South Asian number format)
+class _IconArea extends StatelessWidget {
+  final Color accent;
+  final IconData icon;
+  const _IconArea({required this.accent, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            accent.withValues(alpha: 0.13),
+            accent.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Stack(
+        children: [
+          // Decorative circle
+          Positioned(
+            top: -10,
+            right: -10,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: accent.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+          // Icon badge
+          Center(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: accent.withValues(alpha: 0.22),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(icon, size: 36, color: accent),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PriceRow extends StatelessWidget {
+  final double price;
+  final Color accent;
+  const _PriceRow({required this.price, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: accent,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: const Text(
+            '৳',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            _formatPrice(price),
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: accent,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// South Asian number format: 1,49,999
   String _formatPrice(double price) {
     final int p = price.toInt();
-    // Basic comma formatting
     if (p < 1000) return p.toString();
     final String s = p.toString();
-    if (s.length <= 3) return s;
-    // Insert commas
     final String last3 = s.substring(s.length - 3);
-    String remaining = s.substring(0, s.length - 3);
+    final String remaining = s.substring(0, s.length - 3);
     final buf = StringBuffer(last3);
     int count = 0;
     for (int i = remaining.length - 1; i >= 0; i--) {
