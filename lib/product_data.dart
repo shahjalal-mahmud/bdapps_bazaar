@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Product Data
+//  ProductData
 //
 //  Uses List<Map<String, dynamic>> as required by the assignment.
 //  Each map has:
-//    "name"  → String  : product display name
-//    "price" → double  : product price in BDT
-//    "icon"  → IconData: Material icon used as product image placeholder
-//    "color" → Color   : accent colour for the card gradient
+//    "name"  → String   : product display name
+//    "price" → double   : price in BDT
+//    "icon"  → IconData : Material icon (product image placeholder)
+//    "color" → Color    : accent colour used in the card gradient
 // ─────────────────────────────────────────────────────────────────────────────
-
 class ProductData {
   // ── Sample seed products ──────────────────────────────────────────────────
   static List<Map<String, dynamic>> getSampleProducts() {
@@ -66,7 +65,7 @@ class ProductData {
     ];
   }
 
-  // ── Icon pool for newly added products (cycles through) ──────────────────
+  // ── Icon + colour pools for newly added products ───────────────────────────
   static const List<IconData> _iconPool = [
     Icons.devices,
     Icons.shopping_bag,
@@ -93,11 +92,6 @@ class ProductData {
     Color(0xFF546E7A),
   ];
 
-  /// Returns a random-ish icon for a new product based on a counter seed.
-  static IconData iconForIndex(int index) =>
-      _iconPool[index % _iconPool.length];
-
-  /// Returns a random-ish colour for a new product based on a counter seed.
-  static Color colorForIndex(int index) =>
-      _colorPool[index % _colorPool.length];
+  static IconData iconForIndex(int index) => _iconPool[index % _iconPool.length];
+  static Color colorForIndex(int index)   => _colorPool[index % _colorPool.length];
 }
