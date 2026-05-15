@@ -18,6 +18,29 @@
 
 ---
 
+## 📸 App Screenshots
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <kbd><b>🌟 Splash Screen</b></kbd><br><br>
+        <img src="screenshots/Splash_Screen.png" width="720" alt="Splash Screen"/>![Splash_Screen.png](../../Downloads/Splash_Screen.png)
+      </td>
+      <td align="center" width="33%">
+        <kbd><b>🛒 Home Screen</b></kbd><br><br>
+        <img src="screenshots/Home_Screen.png" width="720" alt="Home Screen"/>
+      </td>
+      <td align="center" width="33%">
+        <kbd><b>➕ Add Product Sheet</b></kbd><br><br>
+        <img src="screenshots/Add_Product_FAB.png" width="720" alt="Add Product Bottom Sheet"/>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## 📌 About the Project
 
 **BdApps Bazaar** is a single-screen Flutter shopping app built as an assignment for the **bdapps National Android Development Bootcamp 2026**. The app demonstrates core Flutter and Dart fundamentals including UI building, state management, and Dart collections.
