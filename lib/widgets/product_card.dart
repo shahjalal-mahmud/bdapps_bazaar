@@ -88,12 +88,12 @@ class _ProductCardState extends State<ProductCard>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: accentColor.withOpacity(0.10),
+            color: accentColor.withValues(alpha: 0.10),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -110,8 +110,8 @@ class _ProductCardState extends State<ProductCard>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    accentColor.withOpacity(0.12),
-                    accentColor.withOpacity(0.05),
+                    accentColor.withValues(alpha: 0.12),
+                    accentColor.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -131,7 +131,7 @@ class _ProductCardState extends State<ProductCard>
                       height: 60,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: accentColor.withOpacity(0.08),
+                        color: accentColor.withValues(alpha: 0.08),
                       ),
                     ),
                   ),
@@ -144,7 +144,7 @@ class _ProductCardState extends State<ProductCard>
                         color: Colors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: accentColor.withOpacity(0.20),
+                            color: accentColor.withValues(alpha: 0.20),
                             blurRadius: 16,
                             offset: const Offset(0, 4),
                           ),

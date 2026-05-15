@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen>
   // ── State ─────────────────────────────────────────────────────────────────
 
   /// Master product list (Map data structure as required)
-  List<Map<String, dynamic>> _products = ProductData.getSampleProducts();
+  final List<Map<String, dynamic>> _products = ProductData.getSampleProducts();
 
   /// Products currently visible after applying search + sort
   List<Map<String, dynamic>> _filtered = [];
@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF6C3EF4).withOpacity(0.45),
+                  color: const Color(0xFF6C3EF4).withValues(alpha: 0.45),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -259,10 +259,10 @@ class _HomeScreenState extends State<HomeScreen>
           StretchMode.fadeTitle,
         ],
         titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-        title: Column(
+        title: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
               'BdApps Bazaar',
               style: TextStyle(
@@ -301,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen>
                   height: 160,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.07),
+                    color: Colors.white.withValues(alpha: 0.07),
                   ),
                 ),
               ),
@@ -313,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen>
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.05),
+                    color: Colors.white.withValues(alpha: 0.05),
                   ),
                 ),
               ),
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Icon(
                   Icons.store_rounded,
                   size: 70,
-                  color: Colors.white.withOpacity(0.12),
+                  color: Colors.white.withValues(alpha: 0.12),
                 ),
               ),
             ],
@@ -348,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen>
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
+                    color: Colors.black.withValues(alpha: 0.06),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -413,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C3EF4).withOpacity(0.1),
+              color: const Color(0xFF6C3EF4).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
@@ -433,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(

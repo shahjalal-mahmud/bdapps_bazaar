@@ -39,7 +39,7 @@ class SortMenu extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -90,8 +90,8 @@ class SortMenu extends StatelessWidget {
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: isActive
-                  ? const Color(0xFF6C3EF4).withOpacity(0.12)
-                  : Colors.grey.withOpacity(0.08),
+                  ? const Color(0xFF6C3EF4).withValues(alpha: 0.12)
+                  : Colors.grey.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(

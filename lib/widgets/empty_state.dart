@@ -24,8 +24,8 @@ class EmptyState extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF6C3EF4).withOpacity(0.12),
-                  const Color(0xFF6C3EF4).withOpacity(0.04),
+                  const Color(0xFF6C3EF4).withValues(alpha: 0.12),
+                  const Color(0xFF6C3EF4).withValues(alpha: 0.04),
                 ],
               ),
             ),
@@ -35,7 +35,7 @@ class EmptyState extends StatelessWidget {
                     ? Icons.search_off_rounded
                     : Icons.inventory_2_outlined,
                 size: 60,
-                color: const Color(0xFF6C3EF4).withOpacity(0.5),
+                color: const Color(0xFF6C3EF4).withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -80,7 +80,7 @@ class EmptyState extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: i == 1
                       ? const Color(0xFF6C3EF4)
-                      : const Color(0xFF6C3EF4).withOpacity(0.25),
+                      : const Color(0xFF6C3EF4).withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(4),
                 ),
               );

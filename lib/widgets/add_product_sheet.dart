@@ -117,9 +117,9 @@ class _AddProductSheetState extends State<AddProductSheet>
                       color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: 14),
-                Column(
+                const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Add New Product',
                       style: TextStyle(
@@ -260,7 +260,7 @@ class _AddProductSheetState extends State<AddProductSheet>
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C3EF4).withOpacity(0.4),
+                          color: const Color(0xFF6C3EF4).withValues(alpha: 0.4),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
                         ),
