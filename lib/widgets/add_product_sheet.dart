@@ -4,14 +4,13 @@ import 'package:flutter/services.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 //  AddProductSheet  –  Modal bottom sheet for adding a new product.
 //
-//  Validates:
-//    • Name must not be empty
-//    • Price must be a positive number
+//  Performance:
+//  • Single AnimationController for the sheet entrance only
+//  • Keyboard-aware padding via viewInsets
+//  • const widgets throughout
 // ─────────────────────────────────────────────────────────────────────────────
 class AddProductSheet extends StatefulWidget {
-  /// Callback fired with (name, price) when the form is submitted
   final void Function(String name, double price) onAdd;
-
   const AddProductSheet({super.key, required this.onAdd});
 
   @override
@@ -21,66 +20,65 @@ class AddProductSheet extends StatefulWidget {
 class _AddProductSheetState extends State<AddProductSheet>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _priceController = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _priceCtrl = TextEditingController();
+  bool _loading = false;
 
-  late final AnimationController _animController;
-  late final Animation<double> _scaleAnim;
-
-  bool _isSubmitting = false;
+  late final AnimationController _sheetCtrl;
+  late final Animation<double> _sheetAnim;
 
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(
+    _sheetCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 340),
     )..forward();
 
-    _scaleAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.elasticOut,
+    _sheetAnim = CurvedAnimation(
+      parent: _sheetCtrl,
+      curve: Curves.easeOutCubic,
     );
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _priceController.dispose();
-    _animController.dispose();
+    _nameCtrl.dispose();
+    _priceCtrl.dispose();
+    _sheetCtrl.dispose();
     super.dispose();
   }
 
-  void _submit() async {
-    // Dismiss keyboard
+  Future<void> _submit() async {
     FocusScope.of(context).unfocus();
-
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isSubmitting = true);
+    setState(() => _loading = true);
     HapticFeedback.mediumImpact();
 
-    // Small delay for visual feedback
-    await Future.delayed(const Duration(milliseconds: 200));
+    // Tiny pause so the loading indicator is visible for a frame
+    await Future.delayed(const Duration(milliseconds: 160));
+    if (!mounted) return;
 
-    final name = _nameController.text.trim();
-    final price = double.parse(_priceController.text.trim());
-
-    widget.onAdd(name, price);
-
+    widget.onAdd(_nameCtrl.text.trim(), double.parse(_priceCtrl.text.trim()));
     if (mounted) Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Padding accounts for the keyboard
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final bottom = MediaQuery.viewInsetsOf(context).bottom;
 
-    return ScaleTransition(
-      scale: _scaleAnim,
-      alignment: Alignment.bottomCenter,
+    return AnimatedBuilder(
+      animation: _sheetAnim,
+      builder: (_, child) => SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.25),
+          end: Offset.zero,
+        ).animate(_sheetAnim),
+        child: FadeTransition(opacity: _sheetAnim, child: child),
+      ),
       child: Container(
-        padding: EdgeInsets.fromLTRB(24, 8, 24, 24 + bottomInset),
+        padding: EdgeInsets.fromLTRB(24, 8, 24, 24 + bottom),
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -89,29 +87,36 @@ class _AddProductSheetState extends State<AddProductSheet>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Drag handle ───────────────────────────────────────────────
+            // Drag handle
             Center(
               child: Container(
-                width: 42,
-                height: 5,
+                width: 40,
+                height: 4,
                 margin: const EdgeInsets.only(top: 8, bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(4),
+                  color: const Color(0xFFE0E0E0),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
 
-            // ── Header ────────────────────────────────────────────────────
+            // Header
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(11),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF8B5CF6), Color(0xFF6C3EF4)],
+                      colors: [Color(0xFF9B6BFF), Color(0xFF6C3EF4)],
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF6C3EF4).withValues(alpha: 0.30),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: const Icon(Icons.add_shopping_cart_rounded,
                       color: Colors.white, size: 22),
@@ -123,7 +128,7 @@ class _AddProductSheetState extends State<AddProductSheet>
                     Text(
                       'Add New Product',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 19,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1A1A2E),
                       ),
@@ -131,10 +136,7 @@ class _AddProductSheetState extends State<AddProductSheet>
                     Text(
                       'Fill in the details below',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w400,
-                      ),
+                          fontSize: 12, color: Color(0xFF9E9EAE)),
                     ),
                   ],
                 ),
@@ -143,22 +145,21 @@ class _AddProductSheetState extends State<AddProductSheet>
 
             const SizedBox(height: 24),
 
-            // ── Form ──────────────────────────────────────────────────────
+            // Form
             Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product Name field
-                  _buildLabel('Product Name', Icons.inventory_2_rounded),
+                  const _Label(text: 'Product Name', icon: Icons.label_rounded),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _nameController,
+                    controller: _nameCtrl,
                     textCapitalization: TextCapitalization.words,
-                    style: const TextStyle(
-                        fontSize: 15, color: Color(0xFF1A1A2E)),
+                    style: const TextStyle(fontSize: 15, color: Color(0xFF1A1A2E)),
                     decoration: const InputDecoration(
                       hintText: 'e.g. Samsung Galaxy S25',
-                      prefixIcon: Icon(Icons.label_rounded,
+                      prefixIcon: Icon(Icons.inventory_2_rounded,
                           color: Color(0xFF6C3EF4), size: 20),
                     ),
                     validator: (val) {
@@ -174,46 +175,25 @@ class _AddProductSheetState extends State<AddProductSheet>
 
                   const SizedBox(height: 18),
 
-                  // Price field
-                  _buildLabel('Price (BDT ৳)', Icons.payments_rounded),
+                  const _Label(text: 'Price (BDT ৳)', icon: Icons.payments_rounded),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _priceController,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
+                    controller: _priceCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d+\.?\d{0,2}')),
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                     ],
-                    style: const TextStyle(
-                        fontSize: 15, color: Color(0xFF1A1A2E)),
+                    style: const TextStyle(fontSize: 15, color: Color(0xFF1A1A2E)),
                     decoration: const InputDecoration(
                       hintText: 'e.g. 25000',
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.only(left: 14, right: 8),
-                        child: Text(
-                          '৳',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF6C3EF4),
-                          ),
-                        ),
-                      ),
-                      prefixIconConstraints:
-                      BoxConstraints(minWidth: 0, minHeight: 0),
+                      prefixIcon: _TakaPrefix(),
+                      prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
                     ),
                     validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Price is required';
-                      }
-                      final parsed = double.tryParse(val.trim());
-                      if (parsed == null) {
-                        return 'Enter a valid number';
-                      }
-                      if (parsed <= 0) {
-                        return 'Price must be greater than 0';
-                      }
+                      if (val == null || val.trim().isEmpty) return 'Price is required';
+                      final n = double.tryParse(val.trim());
+                      if (n == null) return 'Enter a valid number';
+                      if (n <= 0) return 'Price must be greater than 0';
                       return null;
                     },
                   ),
@@ -223,10 +203,9 @@ class _AddProductSheetState extends State<AddProductSheet>
 
             const SizedBox(height: 28),
 
-            // ── Buttons ───────────────────────────────────────────────────
+            // Buttons
             Row(
               children: [
-                // Cancel
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Navigator.of(context).pop(),
@@ -234,40 +213,35 @@ class _AddProductSheetState extends State<AddProductSheet>
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
-                      side: BorderSide(color: Colors.grey.shade300),
+                      side: const BorderSide(color: Color(0xFFE0E0E0)),
                     ),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: const Text('Cancel',
+                        style: TextStyle(
+                            color: Color(0xFF9E9EAE),
+                            fontWeight: FontWeight.w600)),
                   ),
                 ),
 
                 const SizedBox(width: 12),
 
-                // Add button
                 Expanded(
                   flex: 2,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6C3EF4)],
+                        colors: [Color(0xFF9B6BFF), Color(0xFF6C3EF4)],
                       ),
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6C3EF4).withValues(alpha: 0.4),
+                          color: const Color(0xFF6C3EF4).withValues(alpha: 0.38),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
                         ),
                       ],
                     ),
                     child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : _submit,
+                      onPressed: _loading ? null : _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
@@ -275,14 +249,12 @@ class _AddProductSheetState extends State<AddProductSheet>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: _isSubmitting
+                      child: _loading
                           ? const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
+                            strokeWidth: 2, color: Colors.white),
                       )
                           : const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -310,8 +282,17 @@ class _AddProductSheetState extends State<AddProductSheet>
       ),
     );
   }
+}
 
-  Widget _buildLabel(String text, IconData icon) {
+// ── Helper const sub-widgets ──────────────────────────────────────────────────
+
+class _Label extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  const _Label({required this.text, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Icon(icon, size: 14, color: const Color(0xFF6C3EF4)),
@@ -325,6 +306,24 @@ class _AddProductSheetState extends State<AddProductSheet>
           ),
         ),
       ],
+    );
+  }
+}
+
+class _TakaPrefix extends StatelessWidget {
+  const _TakaPrefix();
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(left: 14, right: 8),
+      child: Text(
+        '৳',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF6C3EF4),
+        ),
+      ),
     );
   }
 }
