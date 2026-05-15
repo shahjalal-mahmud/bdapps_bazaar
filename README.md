@@ -1,6 +1,20 @@
 # BdApps Bazaar 🛍️
 
-A modern, premium single-screen e-commerce product list Flutter app — built for a university assignment.
+A modern, premium single-screen e-commerce product list Flutter app — built for the **bdapps National Android Development Bootcamp 2026** (Module 1 — Dart Foundations assignment).
+
+---
+
+## 📱 Project Overview
+
+**BdApps Bazaar** is a simple single-screen shopping app where users can:
+
+- View a list of products in a responsive grid
+- Add new products dynamically via bottom sheet
+- Search products instantly by name
+- Sort products by name or price
+- Experience a modern and beautiful Flutter UI with smooth animations
+
+This project demonstrates Flutter UI development fundamentals, Dart collections (`List<Map<String, dynamic>>`), searching, sorting, and dynamic state management.
 
 ---
 
@@ -36,6 +50,26 @@ bdapps_bazaar/
 ├── analysis_options.yaml
 └── README.md
 ```
+
+---
+
+## 🗃️ Product Data Structure
+
+This project uses Dart `Map` objects inside a `List` to manage products (assignment requirement):
+
+```dart
+List<Map<String, dynamic>> products = [
+  {
+    "name": "iPhone 15 Pro",
+    "price": 149999.0,
+    "icon": Icons.phone_iphone,
+    "color": Color(0xFF6C3EF4),
+  },
+  // ...
+];
+```
+
+All CRUD operations (add, search, sort) operate directly on this `List<Map<String, dynamic>>`.
 
 ---
 
@@ -75,21 +109,74 @@ flutter run -d <device_id>       # run on chosen device
 - Floating Action Button with press-scale micro-interaction
 - Animated bottom sheet for adding products
 - South-Asian (BDT ৳) price formatting
+- Clean, modern, beginner-friendly design
 
 ---
 
-## 📦 Map Data Structure (Assignment Requirement)
+## 📸 App Features Preview
 
-```dart
-List<Map<String, dynamic>> products = [
-  {
-    "name": "iPhone 15 Pro",
-    "price": 149999.0,
-    "icon": Icons.phone_iphone,
-    "color": Color(0xFF6C3EF4),
-  },
-  // ...
-];
-```
+| Feature             | Description                                                |
+|---------------------|------------------------------------------------------------|
+| 🛒 **Product List** | Displays products in beautiful modern cards                |
+| ➕ **Add Product**   | Users can add products using an animated bottom sheet form |
+| 🔍 **Search**       | Instantly filter products by product name                  |
+| 📊 **Sort**         | Sort by Name (A-Z/Z-A) or Price (Low-High/High-Low)        |
 
-All CRUD operations (add, search, sort) operate directly on this `List<Map<String, dynamic>>`.
+---
+
+## 🧠 Technologies Used
+
+- Flutter
+- Dart
+- Material 3 Design
+- StatefulWidget
+- List & Map Data Structures
+
+---
+
+## 🎯 Assignment Information
+
+|                |                                                   |
+|----------------|---------------------------------------------------|
+| **Program**    | bdapps National Android Development Bootcamp 2026 |
+| **Batch**      | Batch 1                                           |
+| **Module**     | Module 1 — Dart Foundations                       |
+| **Assignment** | 2nd Online Class Assignment                       |
+
+---
+
+## 🏛️ About the Bootcamp
+
+The **National Android Development Bootcamp (NADB) 2026** is a nationwide initiative focused on:
+
+- Android Development
+- Flutter
+- App Monetization
+- Real-world Application Building
+- Developer Community Growth
+
+---
+
+## 👨‍💻 Developer
+
+**Md Shahajalal Mahmud**  
+Android & Backend Developer  
+Founder @ Appriyo
+
+---
+
+## 💙 Special Thanks
+
+Thanks to the NADB Mentors & Organizers for organizing this incredible learning opportunity for Bangladeshi developers.
+
+---
+
+## ⭐ Final Note
+
+This project represents my learning journey in Flutter and Dart during the early phase of the bootcamp. More advanced projects and features will be added as the program progresses.
+
+---
+
+## 📜 License
+
+This project is created for educational and assignment purposes.
