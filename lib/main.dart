@@ -28,14 +28,6 @@ class BdAppsBazaarApp extends StatelessWidget {
       title: 'BdApps Bazaar',
       debugShowCheckedModeBanner: false,
 
-      // ── Faster page transitions ───────────────────────────────────────────
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        },
-      ),
-
       // ── Material 3 Theme ──────────────────────────────────────────────────
       theme: ThemeData(
         useMaterial3: true,
@@ -45,6 +37,15 @@ class BdAppsBazaarApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color(0xFFF4F6FB),
         splashFactory: InkSparkle.splashFactory, // faster ink ripple
+
+        // ── Faster page transitions
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
+
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
