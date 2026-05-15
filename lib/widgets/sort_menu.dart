@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  SortMode constants  –  used both in HomeScreen and SortMenu
+//  SortMode constants  –  shared between HomeScreen and SortMenu
 // ─────────────────────────────────────────────────────────────────────────────
 class SortMode {
-  static const String nameAZ   = 'Name A→Z';
-  static const String nameZA   = 'Name Z→A';
-  static const String priceLow = 'Price ↑';
+  static const String nameAZ    = 'Name A→Z';
+  static const String nameZA    = 'Name Z→A';
+  static const String priceLow  = 'Price ↑';
   static const String priceHigh = 'Price ↓';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  SortMenu  –  Popup menu button for choosing sort order.
+//  SortMenu  –  Popup menu for choosing sort order.
+//  Fully stateless – no rebuild cost.
 // ─────────────────────────────────────────────────────────────────────────────
 class SortMenu extends StatelessWidget {
   final String currentMode;
@@ -27,60 +28,54 @@ class SortMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       onSelected: onSortChanged,
-      offset: const Offset(0, 52),
+      offset: const Offset(0, 56),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 8,
+      elevation: 6,
       color: Colors.white,
       child: Container(
-        height: 50,
         width: 50,
+        height: 50,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Color(0x0F000000),
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
-        child: const Icon(
-          Icons.tune_rounded,
-          color: Color(0xFF6C3EF4),
-          size: 22,
-        ),
+        child: const Icon(Icons.tune_rounded, color: Color(0xFF6C3EF4), size: 22),
       ),
       itemBuilder: (_) => [
-        _buildHeader('Sort By'),
-        _buildItem(SortMode.nameAZ,   Icons.sort_by_alpha_rounded),
-        _buildItem(SortMode.nameZA,   Icons.sort_by_alpha_rounded),
-        _buildItem(SortMode.priceLow, Icons.trending_up_rounded),
-        _buildItem(SortMode.priceHigh,Icons.trending_down_rounded),
+        _header('SORT BY'),
+        _item(SortMode.nameAZ,    Icons.sort_by_alpha_rounded),
+        _item(SortMode.nameZA,    Icons.sort_by_alpha_rounded),
+        _item(SortMode.priceLow,  Icons.trending_up_rounded),
+        _item(SortMode.priceHigh, Icons.trending_down_rounded),
       ],
     );
   }
 
-  // ── Non-selectable header item ─────────────────────────────────────────────
-  PopupMenuEntry<String> _buildHeader(String title) {
+  PopupMenuEntry<String> _header(String label) {
     return PopupMenuItem<String>(
       enabled: false,
-      height: 36,
+      height: 34,
       child: Text(
-        title,
+        label,
         style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: Colors.grey,
-          letterSpacing: 1.2,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFFB0B3C5),
+          letterSpacing: 1.4,
         ),
       ),
     );
   }
 
-  // ── Selectable sort option ─────────────────────────────────────────────────
-  PopupMenuItem<String> _buildItem(String mode, IconData icon) {
-    final bool isActive = currentMode == mode;
+  PopupMenuItem<String> _item(String mode, IconData icon) {
+    final bool active = currentMode == mode;
     return PopupMenuItem<String>(
       value: mode,
       height: 46,
@@ -89,15 +84,15 @@ class SortMenu extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: isActive
+              color: active
                   ? const Color(0xFF6C3EF4).withValues(alpha: 0.12)
-                  : Colors.grey.withValues(alpha: 0.08),
+                  : const Color(0xFFF4F4F8),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               size: 16,
-              color: isActive ? const Color(0xFF6C3EF4) : Colors.grey,
+              color: active ? const Color(0xFF6C3EF4) : const Color(0xFFB0B3C5),
             ),
           ),
           const SizedBox(width: 12),
@@ -105,15 +100,15 @@ class SortMenu extends StatelessWidget {
             mode,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-              color: isActive ? const Color(0xFF6C3EF4) : const Color(0xFF1A1A2E),
+              fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+              color: active ? const Color(0xFF6C3EF4) : const Color(0xFF1A1A2E),
             ),
           ),
           const Spacer(),
-          if (isActive)
+          if (active)
             Container(
-              width: 8,
-              height: 8,
+              width: 7,
+              height: 7,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Color(0xFF6C3EF4),
