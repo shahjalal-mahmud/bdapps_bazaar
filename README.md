@@ -25,7 +25,7 @@
     <tr>
       <td align="center" width="33%">
         <kbd><b>🌟 Splash Screen</b></kbd><br><br>
-        <img src="screenshots/Splash_Screen.png" width="720" alt="Splash Screen"/>![Splash_Screen.png](../../Downloads/Splash_Screen.png)
+        <img src="screenshots/Splash_Screen.png" width="720" alt="Splash Screen"/>
       </td>
       <td align="center" width="33%">
         <kbd><b>🛒 Home Screen</b></kbd><br><br>
