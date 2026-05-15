@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  EmptyState  –  Shown when no products match the current search/filter.
+//  Fully stateless / const-friendly.
 // ─────────────────────────────────────────────────────────────────────────────
 class EmptyState extends StatelessWidget {
-  /// True when the empty state is caused by a search returning no results
   final bool isSearchActive;
-
   const EmptyState({super.key, this.isSearchActive = false});
 
   @override
@@ -16,17 +15,21 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // ── Illustration ───────────────────────────────────────────────
+          // Illustration circle
           Container(
-            width: 130,
-            height: 130,
+            width: 128,
+            height: 128,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF6C3EF4).withValues(alpha: 0.12),
+                  const Color(0xFF6C3EF4).withValues(alpha: 0.13),
                   const Color(0xFF6C3EF4).withValues(alpha: 0.04),
                 ],
+              ),
+              border: Border.all(
+                color: const Color(0xFF6C3EF4).withValues(alpha: 0.1),
+                width: 1.5,
               ),
             ),
             child: Center(
@@ -34,15 +37,14 @@ class EmptyState extends StatelessWidget {
                 isSearchActive
                     ? Icons.search_off_rounded
                     : Icons.inventory_2_outlined,
-                size: 60,
-                color: const Color(0xFF6C3EF4).withValues(alpha: 0.5),
+                size: 56,
+                color: const Color(0xFF6C3EF4).withValues(alpha: 0.45),
               ),
             ),
           ),
 
           const SizedBox(height: 28),
 
-          // ── Title ──────────────────────────────────────────────────────
           Text(
             isSearchActive ? 'No Results Found' : 'No Products Yet',
             style: const TextStyle(
@@ -54,33 +56,32 @@ class EmptyState extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // ── Subtitle ───────────────────────────────────────────────────
           Text(
             isSearchActive
-                ? 'Try a different keyword or clear your search to see all products.'
-                : 'Tap the + button below to add your first product to the bazaar.',
+                ? 'Try a different keyword or clear the search to see all products.'
+                : 'Tap the + button to add your first product to the bazaar.',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
-              color: Colors.grey.shade500,
+              color: Color(0xFF9E9EAE),
               height: 1.6,
             ),
           ),
 
           const SizedBox(height: 32),
 
-          // ── Decorative dots ────────────────────────────────────────────
+          // Decorative pill dots
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(3, (i) {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: i == 1 ? 18 : 8,
+                width: i == 1 ? 20 : 8,
                 height: 8,
                 decoration: BoxDecoration(
                   color: i == 1
                       ? const Color(0xFF6C3EF4)
-                      : const Color(0xFF6C3EF4).withValues(alpha: 0.25),
+                      : const Color(0xFF6C3EF4).withValues(alpha: 0.22),
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
