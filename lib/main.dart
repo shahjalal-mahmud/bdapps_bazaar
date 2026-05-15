@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'home_screen.dart';
+import 'splash_screen.dart';
 
 void main() {
-  // Lock the app to portrait mode for consistent UI
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Status bar transparent – done once, no per-frame cost
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.light,
+  ));
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   runApp(const BdAppsBazaarApp());
 }
 
@@ -21,15 +28,23 @@ class BdAppsBazaarApp extends StatelessWidget {
       title: 'BdApps Bazaar',
       debugShowCheckedModeBanner: false,
 
-      // ── Material 3 Theme ──────────────────────────────────────────────
+      // ── Faster page transitions ───────────────────────────────────────────
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
+
+      // ── Material 3 Theme ──────────────────────────────────────────────────
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF6C3EF4),
           brightness: Brightness.light,
         ),
-        fontFamily: 'Roboto',
         scaffoldBackgroundColor: const Color(0xFFF4F6FB),
+        splashFactory: InkSparkle.splashFactory, // faster ink ripple
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -45,7 +60,7 @@ class BdAppsBazaarApp extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Colors.grey.shade200),
+            borderSide: const BorderSide(color: Color(0xFFE8E8F0)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -66,7 +81,7 @@ class BdAppsBazaarApp extends StatelessWidget {
         ),
       ),
 
-      home: const HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }
